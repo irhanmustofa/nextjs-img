@@ -12,20 +12,19 @@ const UploadSchema = z.object({
     image: z
         .instanceof(File)
         .refine((file) => file.size > 0, { message: "Image is required" })
-        .refine((file) => file.size === 0 || file.type.startsWith("image/"), { message: "File must be an image" })
-        .refine((file) => file.size < 4000000, { message: "Ukuran max 3MB" })
-        .optional(),
+        .refine((file) => file.size === 0 || file.type.startsWith("image/"), { message: "File must be an image" }),
 });
 const EditSchema = z.object({
     title: z.string().min(1),
     image: z
         .instanceof(File)
         .refine((file) => file.size === 0 || file.type.startsWith("image/"), { message: "File must be an image" })
-        .refine((file) => file.size < 4000000, { message: "Ukuran max 3MB" }),
+        .refine((file) => file.size < 4000000, { message: "Ukuran max 3MB" })
+        .optional(),
 });
 
 
-export const uploadImage = async (prevState: unknown, formData: FormData) => {
+export const uploadImage = async (prevState: any, formData: FormData) => {
     const validatedFields = UploadSchema.safeParse(
         Object.fromEntries(formData.entries())
     );
@@ -36,7 +35,7 @@ export const uploadImage = async (prevState: unknown, formData: FormData) => {
         }
     }
 
-    const { title, image } = validatedFields.data
+    const { title, image } = validatedFields.data;
     const { url } = await put(image.name, image, {
         access: "public",
         multipart: true
